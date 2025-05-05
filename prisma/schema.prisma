@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String      @id @default(uuid())
+  email    String    @unique
+  password String
+  role     String?
+  Kyc      Kyc?      @relation("Kyc")
+  Business Business? @relation("Business")
+}
+
+model Kyc {
+  id                  String      @id @default(uuid())
+  userId    String     @unique
+  user      User    @relation("Kyc", fields: [userId], references: [id])
+  firstName String?
+  lastName  String?
+  nin       String  @unique
+  ninFile   Json
+  address   String
+  city      String
+  state     String
+  country   String
+}
+
+model Business {
+  id                  String      @id @default(uuid())
+  verificationId      String?
+  userId              String      @unique
+  user                User     @relation("Business", fields: [userId], references: [id])
+  businessName        String   @unique
+  businessTel         String
+  businessEmail       String
+  logoFile            Json
+  registerationNumber String
+  businessDescription String
+  businessAddress     String
+  businessCity        String
+  businessState       String
+  businessCountry     String
+  landmark            String
+  certificateFile     Json?
+  Review              Review[] @relation("Review")
+}
+
+model Review {
+  id                  String      @id @default(uuid())
+  businessId String
+  business   Business @relation("Review", fields: [businessId], references: [id])
+  rating     String
+  comment    String
+  fullName   String
+}
