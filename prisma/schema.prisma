@@ -14,17 +14,17 @@ datasource db {
 }
 
 model User {
-  id                  String      @id @default(uuid())
+  id       String    @id @default(uuid())
   email    String    @unique
   password String
-  role     Roles @default(USER)
+  role     Roles     @default(USER)
   Kyc      Kyc?      @relation("Kyc")
   Business Business? @relation("Business")
 }
 
 model Kyc {
-  id                  String      @id @default(uuid())
-  userId    String     @unique
+  id        String  @id @default(uuid())
+  userId    String  @unique
   user      User    @relation("Kyc", fields: [userId], references: [id])
   firstName String?
   lastName  String?
@@ -37,9 +37,9 @@ model Kyc {
 }
 
 model Business {
-  id                  String      @id @default(uuid())
+  id                  String   @id @default(uuid())
   verificationId      String?
-  userId              String      @unique
+  userId              String   @unique
   user                User     @relation("Business", fields: [userId], references: [id])
   businessName        String   @unique
   businessTel         String
@@ -57,7 +57,7 @@ model Business {
 }
 
 model Review {
-  id                  String      @id @default(uuid())
+  id         String   @id @default(uuid())
   businessId String
   business   Business @relation("Review", fields: [businessId], references: [id])
   rating     String
@@ -68,5 +68,4 @@ model Review {
 enum Roles {
   ADMIN
   USER
- 
 }

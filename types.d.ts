@@ -1,9 +1,10 @@
 interface AuthCredentials {
   email: string;
+  role: Roles;
   password: string;
 }
 
-type Roles = "ADMIN" | "USER";
+type Roles = { ADMIN; USER };
 
 interface BusinessType {
   id: string;
@@ -33,11 +34,9 @@ interface Session {
   };
 }
 interface Token {
- 
-    id: string;
-    role: Roles;
-    email: string;
-  
+  id: string;
+  role: Roles;
+  email: string;
 }
 interface FileType {
   secure_url: string;
