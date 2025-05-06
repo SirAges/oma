@@ -102,9 +102,8 @@ const OnboardingForm = ({
   const {
     handleSubmit,
     control,
-    formState: { isSubmitting, disabled, errors },
+    formState: { isSubmitting, disabled,  },
   } = method;
-  console.log("errors", errors);
   return (
     <Form {...method}>
       <form

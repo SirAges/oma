@@ -48,20 +48,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        //@ts-expect-error role
+        //@ts-expect-error ignore role
         token.role = user.role;
-        token.name = user.name;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        //@ts-expect-error id type
-        session.user.id = token.id as number;
-        //@ts-expect-error role
-        session.user.role = token.role as string;
+        session.user.id = token.id as string;
+        //@ts-expect-error ignore role
+        session.user.role = token.role;
         session.user.email = token.email as string;
-        session.user.name = token.name;
       }
       return session;
     },

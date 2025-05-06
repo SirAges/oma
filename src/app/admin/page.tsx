@@ -17,8 +17,7 @@ import {
   verifyBusiness,
 } from "@/lib/actions/business.action";
 
-import { cn, generateCertificate } from "@/lib/utils";
-import { InputJsonValue } from "@prisma/client/runtime/library";
+import { cn, GenerateCertifate } from "@/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
@@ -33,6 +32,7 @@ import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 const Page = () => {
   const [businesses, setBusinesses] = useState<BusinessType[]>([]);
+  const [business, setBusiness] = useState<BusinessType | undefined>();
 
   const [page, setPage] = useState(1);
   const [nextPage, setNextPage] = useState<number | null | undefined>(null);
@@ -58,24 +58,28 @@ const Page = () => {
     fetchData();
     return () => {};
   }, [page, order]);
+
   const handleVerify = async ({ businessId }: { businessId: string }) => {
     try {
       if (
         certificateRef?.current &&
         certificateRef.current instanceof HTMLElement
       ) {
+        const generateCertifate = new GenerateCertifate(certificateRef.current);
         const verified = await verifyBusiness({
           businessId,
         });
+        console.log("verified", verified);
         if (verified) {
-          const certificateFile = await generateCertificate(
-            certificateRef.current
-          );
-          const updated = await updateBusiness({
-            businessId,
-            data: { certificateFile: certificateFile as InputJsonValue },
-          });
-          console.log("html2canva", updated);
+          setBusiness(verified?.data as unknown as BusinessType);
+          const certificateFile = await generateCertifate.genDomToImage();
+          if (certificateFile) {
+            const updated = await updateBusiness({
+              businessId,
+              data: { certificateFile: certificateFile },
+            });
+            console.log("updated", updated);
+          }
         }
       }
     } catch (error) {
@@ -85,8 +89,7 @@ const Page = () => {
   return (
     <>
       <div className="">
-        <CertificateCard ref={certificateRef} />
-        <div className="bg-background flex items-center justify-between  sticky top-0 z-50 h-14 px-3">
+        <div className="flex bg-background  items-center justify-between  sticky top-0 z-50 h-14 px-3">
           <div className="w-8 h-8 rounded-full flex items-center justify-center border bg-background/70">
             <ArrowUpDown
               onClick={() =>
@@ -174,7 +177,10 @@ const Page = () => {
                 }) => (
                   <TableRow key={id}>
                     <TableCell title={businessCountry}>
-                      <Link href={logoFile.secure_url} target="_blank">
+                      <Link
+                        href={logoFile.secure_url}
+                        target="_blank"
+                      >
                         <div className="relative w-7 h-7 rounded">
                           {" "}
                           <Image
@@ -217,6 +223,7 @@ const Page = () => {
                     </TableCell>
                     <TableCell title={certificateFile?.secure_url as string}>
                       <Link
+                        target="_blank"
                         href={(certificateFile?.secure_url as string) || ""}
                         className={cn(
                           buttonVariants({ variant: "link" }),
@@ -269,6 +276,10 @@ const Page = () => {
           </Table>
         </div>
       </div>
+      <CertificateCard
+        ref={certificateRef}
+        business={business!}
+      />
     </>
   );
 };

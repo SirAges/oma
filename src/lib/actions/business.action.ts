@@ -57,6 +57,32 @@ export const getAllBusinesses = async ({
     };
   }
 };
+export const getBusiness = async ({
+  userId,
+}: {
+  userId: string | undefined;
+}) => {
+  try {
+    const foundBusiness = await prisma.business.findFirst({
+      where: { userId },
+    });
+
+    return {
+      success: true,
+      message: "Business fetched successfully",
+      status: 200,
+      data: foundBusiness,
+    };
+  } catch (error: unknown) {
+    console.log("error", error);
+    return {
+      error: true,
+      message: "an error occured",
+      status: 500,
+      data: [],
+    };
+  }
+};
 export const updateBusiness = async ({
   businessId,
   data,
@@ -112,7 +138,7 @@ export const verifyBusiness = async ({
       };
     }
 
-    const verificationId = generateVerificationId("OMA-ZEAH");
+    const verificationId = generateVerificationId("OMA-ZEAH") as string;
     const updated = await prisma.business.update({
       data: { verificationId },
       where: { id: businessId },
@@ -130,11 +156,11 @@ export const verifyBusiness = async ({
         ),
         subject: "Verification Approval",
       });
-      console.log("verified");
       return {
         success: true,
         message: "Business Verified",
         status: 200,
+        data: updated,
       };
     }
   } catch (error) {

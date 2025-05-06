@@ -3,8 +3,8 @@ import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { COMPANY_NAME } from "@/lib/constants";
-import Logo from "@/assets/images/logo.png";
-import authImage from "@/assets/images/img3.jpeg";
+import Logo from "@/assets/images/img1.jpg";
+import authImage from "@/assets/images/img2.jpg";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();

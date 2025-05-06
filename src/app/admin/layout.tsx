@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { COMPANY_NAME } from "@/lib/constants";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: COMPANY_NAME,
@@ -15,9 +16,14 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-
   if (!session) redirect("/auth/sign-in");
-  if (!session.user.role !== "Admin") redirect("/onboarding");
+  //@ts-expect-error ignore role
+  if (session.user.role !== "ADMIN") redirect("/onboarding");
 
-  return <div>{children}</div>;
+  return (
+    <div>
+      <Header />
+      {children}
+    </div>
+  );
 }

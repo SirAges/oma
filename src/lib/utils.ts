@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
-import html2canvas from "html2canvas";
 import { twMerge } from "tailwind-merge";
 import { processUploads } from "./cloudinary";
+//@ts-expect-error type not in registry
+import domtoimage from "dom-to-image-more";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,15 +27,26 @@ export const generateVerificationId = (prefix: string) => {
   return verificationId;
 };
 
-export const generateCertificate = async (certificateRef: HTMLDivElement) => {
-  try {
-    const canvas = await html2canvas(certificateRef);
-    const certificateBase64 = canvas.toDataURL();
-    if (certificateBase64) {
-      const certificateFile = await processUploads(certificateBase64);
-      return certificateFile;
-    }
-  } catch (error) {
-    console.log("error", error);
+export class GenerateCertifate {
+  private certificateRef;
+  constructor(certificateRef: HTMLDivElement) {
+    this.certificateRef = certificateRef;
   }
-};
+
+  async genDomToImage() {
+    try {
+      this.certificateRef.style.display = "flex";
+      const certificateBase64 = await domtoimage.toPng(this.certificateRef);
+      if (certificateBase64) {
+        const certificateFile = (await processUploads(
+          certificateBase64
+        )) as FileType;
+        console.log("certificateFile", certificateFile);
+        this.certificateRef.style.display = "none";
+        return certificateFile;
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+}

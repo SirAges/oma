@@ -11,8 +11,7 @@ const Page = () => (
     defaultValues={{
       email: "",
       password: "",
-      lastName: "",
-      firstName: "",
+     
     }}
     onSubmit={signUp}
   />
